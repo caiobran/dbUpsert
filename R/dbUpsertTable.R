@@ -43,7 +43,12 @@ dbUpsertTable <- function(
   ##############################################################################
   # check if table exists
   ##############################################################################
-  if (DBI::dbExistsTable(conn, name) == FALSE) {
+  table_exists <- DBI::dbExistsTable(
+    conn = conn,
+    name = DBI::Id(catalog = catalog, schema = schema, table = name)
+  )
+
+  if (table_exists == FALSE) {
     stop(paste0("Target table `", name, "` does not exist."))
   }
 
