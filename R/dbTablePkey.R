@@ -2,7 +2,7 @@
 #'
 #' @param conn A DBI Connection Object
 #' @param name A table name in the DB
-
+#'
 .dbTablePkey <- function(conn, name) {
   rdbms <- conn |> class() |> as.character()
 

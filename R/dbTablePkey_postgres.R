@@ -2,9 +2,9 @@
 #'
 #' @param conn A DBI Connection Object
 #' @param name A table name in the DB
-
+#'
 .dbTablePkey_postgres <- function(conn, name) {
-  dbGetQuery(
+  DBI::dbGetQuery(
     conn = conn,
     statement = "
       SELECT c.column_name

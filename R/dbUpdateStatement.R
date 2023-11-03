@@ -9,7 +9,7 @@
 #' @param staging_table A table name in the DB containing data to upsert
 #' @param join_cols A character vector of column names used as the primary key
 #' @param update_cols A character vector of column names to update, should exclude the PKs
-
+#'
 .dbUpdateStatement <- function(
   conn,
   target_table,
@@ -28,22 +28,22 @@
     stop("Must provide at least one column to update.")
   }
 
-  target_table <- dbQuoteIdentifier(
+  target_table <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = target_table
   ) |> as.character()
 
-  staging_table <- dbQuoteIdentifier(
+  staging_table <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = staging_table
   ) |> as.character()
 
-  join_cols <- dbQuoteIdentifier(
+  join_cols <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = join_cols
   ) |> as.character()
 
-  update_cols <- dbQuoteIdentifier(
+  update_cols <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = update_cols
   ) |>

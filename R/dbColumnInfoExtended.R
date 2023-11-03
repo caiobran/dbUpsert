@@ -2,12 +2,13 @@
 #'
 #' @param conn A DBI Connection Object
 #' @param name A table name in the DB
-
+#'
+#'
 dbColumnInfoExtended <- function(conn, name) {
   rdbms <- conn |> class() |> as.character()
 
   if (rdbms == "PqConnection") {
-    col_info <- dbGetQuery(
+    col_info <- DBI::dbGetQuery(
       conn = conn,
       statement = "
         SELECT
@@ -23,7 +24,7 @@ dbColumnInfoExtended <- function(conn, name) {
       params = list(name)
     )
   } else if (rdbms == "MySQLConnection") {
-    col_info <- dbGetQuery(
+    col_info <- DBI::dbGetQuery(
       conn = conn,
       statement = "
           SELECT
@@ -41,7 +42,7 @@ dbColumnInfoExtended <- function(conn, name) {
   } else if (rdbms == "Microsoft SQL Server") {
     warning("Auto-detection for identities and auto-generated sequences not yet implemented for SQL Server.")
 
-    col_info <- dbGetQuery(
+    col_info <- DBI::dbGetQuery(
       conn = conn,
       statement = "
         SELECT

@@ -1,20 +1,32 @@
 #' Upsert (insert and update) data.frame to SQL table
 #'
 #' Only works with primary keys, not identities/sequences.
-#' The target SQL table must have a primary key, tables without primary keys cannot perform conflict detection.
-#' Primary keys cannot be updated with this function, even if the SQL table allows keys to be changed.
-#' If you are trying to upsert a table that does not have primary key, instead consider first using `dbAppendTable()` to write new data, then `dbUpdateTable()` to update existing values.
-#' Use the `verbose = TRUE` argument to show details of the function's progress in the console.
+#' The target SQL table must have a primary key, tables without primary keys
+#' cannot perform conflict detection.
+#' Primary keys cannot be updated with this function, even if the SQL table
+#' allows keys to be changed.
+#' If you are trying to upsert a table that does not have primary key, instead
+#' consider first using `dbAppendTable()` to write new data, then
+#' `dbUpdateTable()` to update existing values.
+#' Use the `verbose = TRUE` argument to show details of the function's progress
+#' in the console.
 #' This function returns `TRUE` if it succeeds.
 #'
 #' @param conn A DBI Connection Object
 #' @param name A table name in the DB to upsert to
 #' @param value A dataframe object containing data to upsert
-#' @param value_pkey A character vector of column names that form the SQL table primary key. For supported SQL backends, this is queried for you. Otherwise, you will have to manually specify.
-#' @param staging_table A string of the table name to create to stage data. If not provided, a new table name will be generated.
-#' @param overwrite_stage_table A boolean indicating if you want to drop the staging table (if it already exists). If it does already exist, and this value is `false`, then the upsert will fail.
-#' @param verbose A boolean indicating whether or not to print steps executed in the console
-
+#' @param value_pkey A character vector of column names that form the SQL table
+#' primary key. For supported SQL backends, this is queried for you. Otherwise,
+#' you will have to manually specify.
+#' @param stage_table A string of the table name to create to stage data. If
+#' not provided, a new table name will be generated.
+#' @param overwrite_stage_table A boolean indicating if you want to drop the
+#' staging table (if it already exists). If it does already exist, and this
+#' value is `false`, then the upsert will fail.
+#' @param verbose A boolean indicating whether or not to print steps executed
+#' in the console
+#'
+#' @export
 dbUpsertTable <- function(
   conn,
   name,
@@ -29,7 +41,7 @@ dbUpsertTable <- function(
   ##############################################################################
   # check if table exists
   ##############################################################################
-  if (dbExistsTable(conn, name) == FALSE) {
+  if (DBI::dbExistsTable(conn, name) == FALSE) {
     stop(paste0("Target table `", name, "` does not exist."))
   }
 
@@ -190,7 +202,7 @@ dbUpsertTable <- function(
     cat(paste0("Writing data to staging table: ", stage_table, "\n"))
   }
 
-  dbWriteTable(
+  DBI::dbWriteTable(
     conn = conn,
     name = stage_table,
     value = value,
@@ -218,14 +230,14 @@ dbUpsertTable <- function(
     ))
   }
 
-  dbWithTransaction(
+  DBI::dbWithTransaction(
     conn = conn,
     {
-      update_res <- dbSendStatement(conn, upsert_statements[[1]])
-      dbClearResult(update_res)
+      update_res <- DBI::dbSendStatement(conn, upsert_statements[[1]])
+      DBI::dbClearResult(update_res)
 
-      insert_res <- dbSendStatement(conn, upsert_statements[[2]])
-      dbClearResult(insert_res)
+      insert_res <- DBI::dbSendStatement(conn, upsert_statements[[2]])
+      DBI::dbClearResult(insert_res)
     }
   )
 
@@ -235,7 +247,8 @@ dbUpsertTable <- function(
   if (verbose == TRUE) {
     cat(paste0("Dropping staging table: ", stage_table, "\n"))
   }
-  dbRemoveTable(conn, stage_table)
+
+  DBI::dbRemoveTable(conn, stage_table)
 
   return(TRUE)
 }

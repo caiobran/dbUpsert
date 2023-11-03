@@ -21,19 +21,30 @@ dbUpsertTable(
 
 \item{value}{A dataframe object containing data to upsert}
 
-\item{value_pkey}{A character vector of column names that form the SQL table primary key. For supported SQL backends, this is queried for you. Otherwise, you will have to manually specify.}
+\item{value_pkey}{A character vector of column names that form the SQL table
+primary key. For supported SQL backends, this is queried for you. Otherwise,
+you will have to manually specify.}
 
-\item{overwrite_stage_table}{A boolean indicating if you want to drop the staging table (if it already exists). If it does already exist, and this value is `false`, then the upsert will fail.}
+\item{stage_table}{A string of the table name to create to stage data. If
+not provided, a new table name will be generated.}
 
-\item{verbose}{A boolean indicating whether or not to print steps executed in the console}
+\item{overwrite_stage_table}{A boolean indicating if you want to drop the
+staging table (if it already exists). If it does already exist, and this
+value is `false`, then the upsert will fail.}
 
-\item{staging_table}{A string of the table name to create to stage data. If not provided, a new table name will be generated.}
+\item{verbose}{A boolean indicating whether or not to print steps executed
+in the console}
 }
 \description{
 Only works with primary keys, not identities/sequences.
-The target SQL table must have a primary key, tables without primary keys cannot perform conflict detection.
-Primary keys cannot be updated with this function, even if the SQL table allows keys to be changed.
-If you are trying to upsert a table that does not have primary key, instead consider first using `dbAppendTable()` to write new data, then `dbUpdateTable()` to update existing values.
-Use the `verbose = TRUE` argument to show details of the function's progress in the console.
+The target SQL table must have a primary key, tables without primary keys
+cannot perform conflict detection.
+Primary keys cannot be updated with this function, even if the SQL table
+allows keys to be changed.
+If you are trying to upsert a table that does not have primary key, instead
+consider first using `dbAppendTable()` to write new data, then
+`dbUpdateTable()` to update existing values.
+Use the `verbose = TRUE` argument to show details of the function's progress
+in the console.
 This function returns `TRUE` if it succeeds.
 }

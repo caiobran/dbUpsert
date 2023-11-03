@@ -6,18 +6,21 @@
 #' @param conn A DBI Connection Object
 #'
 #' @examples
+#' \dontrun{
 #' db_con <- dbConnect(...)
 #' dbVersion(db_con)
-
+#' }
+#'
+#' @export
 dbVersion <- function(conn) {
   rdbms <- conn |> class() |> as.character()
 
   if (rdbms == "PqConnection") {
-    return(dbGetInfo(conn)[["db.version"]])
+    return(DBI::dbGetInfo(conn)[["db.version"]])
   } else if (rdbms == "MySQLConnection") {
-    return(dbGetInfo(conn)[["serverVersion"]])
+    return(DBI::dbGetInfo(conn)[["serverVersion"]])
   } else if (rdbms == "Microsoft SQL Server") {
-    return(dbGetInfo(conn)[["db.version"]])
+    return(DBI::dbGetInfo(conn)[["db.version"]])
   } else {
     return("unknown")
   }
