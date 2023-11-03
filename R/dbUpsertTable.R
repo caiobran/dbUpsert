@@ -241,13 +241,12 @@ dbUpsertTable <- function(
   DBI::dbWithTransaction(
     conn = conn,
     {
-      browser()
       rs <- DBI::dbSendStatement(conn, upsert_statements[[1]])
-      DBI::dbGetRowsAffected(rs)
+      DBI::dbGetRowsAffected(rs) %>% cat(" row(s) affected by UPDATE.\n")
       DBI::dbClearResult(rs)
 
       rs <- DBI::dbSendStatement(conn, upsert_statements[[2]])
-      DBI::dbGetRowsAffected(rs)
+      DBI::dbGetRowsAffected(rs) %>% cat(" row(s) affected by INSERT.\n")
       DBI::dbClearResult(rs)
     }
   )
