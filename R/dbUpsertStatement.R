@@ -38,7 +38,12 @@
   target_table <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = target_table
-  ) |> as.character()
+  ) |> as.character() |> paste(schema, ., sep = ".")
+
+  staging_table <- DBI::dbQuoteIdentifier(
+    conn = conn,
+    x = staging_table
+  ) |> as.character() |> paste(schema, ., sep = ".")
 
   insert_cols <- DBI::dbQuoteIdentifier(
     conn = conn,
@@ -47,11 +52,6 @@
     as.character() |>
     paste0(collapse = "\n  ,")
 
-  staging_table <- DBI::dbQuoteIdentifier(
-    conn = conn,
-    x = staging_table
-  ) |> as.character()
-
   table_pkey <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = table_pkey
@@ -59,12 +59,12 @@
     as.character()
 
   upsert_insert_statement <- paste0(
-    "INSERT INTO ", schema, ".", target_table, "(\n",
+    "INSERT INTO ", target_table, "(\n",
     "  ", insert_cols, "\n",
     ")\n",
     "SELECT\n",
     "  ", insert_cols, "\n",
-    "FROM ", schema, ".", staging_table, "\n",
+    "FROM ", staging_table, "\n",
     "WHERE NOT EXISTS (\n",
     "  SELECT 1 FROM ", target_table, "\n",
     "  WHERE ", target_table, ".", table_pkey[1],  " = ", staging_table, ".", table_pkey[1], "\n",

@@ -35,12 +35,12 @@
   target_table <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = target_table
-  ) |> as.character()
+  ) |> as.character() |> paste(schema, ., sep = ".")
 
   staging_table <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = staging_table
-  ) |> as.character()
+  ) |> as.character() |> paste(schema, ., sep = ".")
 
   join_cols <- DBI::dbQuoteIdentifier(
     conn = conn,
@@ -56,9 +56,9 @@
     paste0(collapse = "\n  ,")
 
   update_statement <- paste0(
-    "UPDATE ", schema, ".", target_table, " SET\n",
+    "UPDATE ", target_table, " SET\n",
     "  ", update_cols, "\n",
-    "FROM ", schema, ".", staging_table, "\n",
+    "FROM ", staging_table, "\n",
     "WHERE ", target_table, ".", join_cols[1],  " = ", staging_table, ".", join_cols[1], "\n",
     ifelse(
       length(join_cols) > 1,
