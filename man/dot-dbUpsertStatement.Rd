@@ -6,6 +6,7 @@
 \usage{
 .dbUpsertStatement(
   conn,
+  schema,
   target_table,
   staging_table,
   table_pkey,
@@ -15,6 +16,8 @@
 }
 \arguments{
 \item{conn}{A DBI Connection Object}
+
+\item{schema}{A schema name in the DB to upsert to}
 
 \item{target_table}{A table name in the DB to upsert to}
 

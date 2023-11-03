@@ -5,8 +5,8 @@
 #' Generates ANSI compliant SQL statement to update existing records from another table.
 #'
 #' @param conn A DBI Connection Object
-#' @param target_table A table name in the DB to upsert to
 #' @param schema A schema name in the DB to upsert to
+#' @param target_table A table name in the DB to upsert to
 #' @param staging_table A table name in the DB containing data to upsert
 #' @param join_cols A character vector of column names used as the primary key
 #' @param update_cols A character vector of column names to update, should exclude the PKs

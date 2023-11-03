@@ -9,6 +9,7 @@
 #' It is intended that both statements are sent in the same transaction.
 #'
 #' @param conn A DBI Connection Object
+#' @param schema A schema name in the DB to upsert to
 #' @param target_table A table name in the DB to upsert to
 #' @param staging_table A table name in the DB containing data to upsert
 #' @param table_pkey A character vector of column names used as the primary key
@@ -17,6 +18,7 @@
 #'
 .dbUpsertStatement <- function(
   conn,
+  schema,
   target_table,
   staging_table,
   table_pkey,
