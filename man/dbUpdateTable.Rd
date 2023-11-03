@@ -21,18 +21,29 @@ dbUpdateTable(
 
 \item{value}{A dataframe object containing data to update}
 
-\item{join_on}{A character vector of column names to match between the dataframe and SQL table. If not provided, will guess based on SQL primary key or identity columns}
+\item{join_on}{A character vector of column names to match between the data
+frame and SQL table. If not provided, will guess based on SQL primary key or
+identity columns}
 
-\item{overwrite_stage_table}{A boolean indicating if you want to drop the staging table (if it already exists). If it does already exist, and this value is `false`, then the upsert will fail.}
+\item{stage_table}{A string of the table name to create to stage data. If
+not provided, a new table name will be generated.}
 
-\item{verbose}{A boolean indicating whether or not to print steps executed in the console}
+\item{overwrite_stage_table}{A boolean indicating if you want to drop the
+staging table (if it already exists). If it does already exist, and this
+value is `false`, then the upsert will fail.}
 
-\item{staging_table}{A string of the table name to create to stage data. If not provided, a new table name will be generated.}
+\item{verbose}{A boolean indicating whether or not to print steps executed
+in the console}
 }
 \description{
-This function will attempt to guess how to update the SQL table based on the existance of any identity/sequence columns or primary key columns.
-Alternatively, you can override the guessing by supplying a character vector of column names to `join_on` to tell the function how to match values from the data.frame to the SQL table.
-If the target SQL table does not have any identity or primary key columns, `join_on` must be provided, or the function will throw an error.
-Use the `verbose = TRUE` argument to show details of the function's progress in the console.
+This function will attempt to guess how to update the SQL table based on the
+existence of any identity/sequence columns or primary key columns.
+Alternatively, you can override the guessing by supplying a character vector
+of column names to `join_on` to tell the function how to match values from
+the data.frame to the SQL table.
+If the target SQL table does not have any identity or primary key columns,
+`join_on` must be provided, or the function will throw an error.
+Use the `verbose = TRUE` argument to show details of the function's progress
+in the console.
 This function returns `TRUE` if it succeeds.
 }

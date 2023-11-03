@@ -14,6 +14,9 @@ Given a DBI connection, evaluate the information to extract the DB Version.
 This may be necessary when executing RDBMS-specific SQL syntax.
 }
 \examples{
+\dontrun{
 db_con <- dbConnect(...)
 dbVersion(db_con)
+}
+
 }

@@ -63,7 +63,7 @@ df1 <- data.frame(
   var_two = rnorm(10)
 )
 
-dbWriteTable(
+DBI::dbWriteTable(
   conn = db_con,
   name = "test_one",
   value = df1,

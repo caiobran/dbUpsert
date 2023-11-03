@@ -14,7 +14,7 @@
 #' @param table_pkey A character vector of column names used as the primary key
 #' @param insert_cols A character vector of column names to insert, should include the PKs
 #' @param update_cols A character vector of column names to update, should exclude the PKs
-
+#'
 .dbUpsertStatement <- function(
   conn,
   target_table,
@@ -31,24 +31,24 @@
     update_cols = update_cols
   )
 
-  target_table <- dbQuoteIdentifier(
+  target_table <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = target_table
   ) |> as.character()
 
-  insert_cols <- dbQuoteIdentifier(
+  insert_cols <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = insert_cols
   ) |>
     as.character() |>
     paste0(collapse = "\n  ,")
 
-  staging_table <- dbQuoteIdentifier(
+  staging_table <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = staging_table
   ) |> as.character()
 
-  table_pkey <- dbQuoteIdentifier(
+  table_pkey <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = table_pkey
   ) |>

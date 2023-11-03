@@ -1,19 +1,31 @@
 #' Update a SQL table using values from a data.frame
 #'
-#' This function will attempt to guess how to update the SQL table based on the existance of any identity/sequence columns or primary key columns.
-#' Alternatively, you can override the guessing by supplying a character vector of column names to `join_on` to tell the function how to match values from the data.frame to the SQL table.
-#' If the target SQL table does not have any identity or primary key columns, `join_on` must be provided, or the function will throw an error.
-#' Use the `verbose = TRUE` argument to show details of the function's progress in the console.
+#' This function will attempt to guess how to update the SQL table based on the
+#' existence of any identity/sequence columns or primary key columns.
+#' Alternatively, you can override the guessing by supplying a character vector
+#' of column names to `join_on` to tell the function how to match values from
+#' the data.frame to the SQL table.
+#' If the target SQL table does not have any identity or primary key columns,
+#' `join_on` must be provided, or the function will throw an error.
+#' Use the `verbose = TRUE` argument to show details of the function's progress
+#' in the console.
 #' This function returns `TRUE` if it succeeds.
 #'
 #' @param conn A DBI Connection Object
 #' @param name A table name in the DB to upsert to
 #' @param value A dataframe object containing data to update
-#' @param join_on A character vector of column names to match between the dataframe and SQL table. If not provided, will guess based on SQL primary key or identity columns
-#' @param staging_table A string of the table name to create to stage data. If not provided, a new table name will be generated.
-#' @param overwrite_stage_table A boolean indicating if you want to drop the staging table (if it already exists). If it does already exist, and this value is `false`, then the upsert will fail.
-#' @param verbose A boolean indicating whether or not to print steps executed in the console
-
+#' @param join_on A character vector of column names to match between the data
+#' frame and SQL table. If not provided, will guess based on SQL primary key or
+#' identity columns
+#' @param stage_table A string of the table name to create to stage data. If
+#'  not provided, a new table name will be generated.
+#' @param overwrite_stage_table A boolean indicating if you want to drop the
+#' staging table (if it already exists). If it does already exist, and this
+#' value is `false`, then the upsert will fail.
+#' @param verbose A boolean indicating whether or not to print steps executed
+#' in the console
+#'
+#' @export
 dbUpdateTable <- function(
   conn,
   name,
@@ -28,7 +40,7 @@ dbUpdateTable <- function(
   ##############################################################################
   # check if table exists
   ##############################################################################
-  if (dbExistsTable(conn, name) == FALSE) {
+  if (DBI::dbExistsTable(conn, name) == FALSE) {
     stop(paste0("Target table `", name, "` does not exist."))
   }
 
@@ -173,7 +185,7 @@ dbUpdateTable <- function(
     cat("Writing R data to staging table in SQL DB\n")
   }
 
-  dbWriteTable(
+  DBI::dbWriteTable(
     conn = conn,
     name = stage_table,
     value = value,
@@ -199,11 +211,12 @@ dbUpdateTable <- function(
     ))
   }
 
-  update_res <- dbSendStatement(
+  update_res <- DBI::dbSendStatement(
     conn = conn,
     statement = update_statement
   )
-  dbClearResult(update_res)
+
+  DBI::dbClearResult(update_res)
 
   ##############################################################################
   # Remove staging table
@@ -211,7 +224,8 @@ dbUpdateTable <- function(
   if (verbose == TRUE) {
     cat(paste0("Dropping staging table: ", stage_table, "\n"))
   }
-  dbRemoveTable(conn, stage_table)
+
+  DBI::dbRemoveTable(conn, stage_table)
 
   return(TRUE)
 }
