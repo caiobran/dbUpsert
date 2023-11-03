@@ -25,9 +25,9 @@ dbColumnInfoExtended <- function(conn, name, schema, catalog) {
         FROM
           information_schema.columns
         WHERE
-          table_name = ?
-          AND table_schema = ?
-          AND table_catalog = ?;",
+          table_name = $1
+          AND table_schema = $2
+          AND table_catalog = $3;",
       params = list(name, schema, catalog)
     )
   } else if (rdbms == "MySQLConnection") {
