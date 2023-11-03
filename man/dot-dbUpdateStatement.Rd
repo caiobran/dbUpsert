@@ -6,6 +6,7 @@
 \usage{
 .dbUpdateStatement(
   conn,
+  schema,
   target_table,
   staging_table,
   join_cols = NA,
@@ -14,6 +15,8 @@
 }
 \arguments{
 \item{conn}{A DBI Connection Object}
+
+\item{schema}{A schema name in the DB to upsert to}
 
 \item{target_table}{A table name in the DB to upsert to}
 
