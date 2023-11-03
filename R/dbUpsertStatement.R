@@ -23,8 +23,10 @@
   insert_cols,
   update_cols
 ) {
+
   upsert_update_statement <- .dbUpdateStatement(
     conn = conn,
+    schema = schema,
     target_table = target_table,
     staging_table = staging_table,
     join_cols = table_pkey,

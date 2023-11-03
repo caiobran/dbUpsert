@@ -206,6 +206,7 @@ dbUpdateTable <- function(
   ##############################################################################
   update_statement <- .dbUpdateStatement(
     conn = conn,
+    schema = schema,
     target_table = name,
     staging_table = stage_table,
     join_cols = join_on,

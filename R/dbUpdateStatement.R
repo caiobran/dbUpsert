@@ -6,12 +6,14 @@
 #'
 #' @param conn A DBI Connection Object
 #' @param target_table A table name in the DB to upsert to
+#' @param schema A schema name in the DB to upsert to
 #' @param staging_table A table name in the DB containing data to upsert
 #' @param join_cols A character vector of column names used as the primary key
 #' @param update_cols A character vector of column names to update, should exclude the PKs
 #'
 .dbUpdateStatement <- function(
   conn,
+  schema,
   target_table,
   staging_table,
   join_cols = NA,
@@ -19,11 +21,13 @@
 ) {
   # check if join cols are valid
   join_cols <- as.character(join_cols)
+
   if (length(join_cols) == 0) {
     stop("Must provide at least one column to join on.")
   }
   # check if update columns are valid
   update_cols <- as.character(update_cols)
+
   if (length(update_cols) == 0) {
     stop("Must provide at least one column to update.")
   }
@@ -55,10 +59,10 @@
     "UPDATE ", target_table, " SET\n",
     "  ", update_cols, "\n",
     "FROM ", staging_table, "\n",
-    "WHERE ", target_table, ".", join_cols[1],  " = ", staging_table, ".", join_cols[1], "\n",
+    "WHERE ", target_table, ".", join_cols[1],  " = ", schema, ".", staging_table, ".", join_cols[1], "\n",
     ifelse(
       length(join_cols) > 1,
-      paste0("AND ", target_table, ".", join_cols[-1], " = ", staging_table, ".", join_cols[-1]) |>
+      paste0("AND ", target_table, ".", join_cols[-1], " = ", schema, ".", staging_table, ".", join_cols[-1]) |>
         paste0(collapse = "\n"),
       ""
     ),
