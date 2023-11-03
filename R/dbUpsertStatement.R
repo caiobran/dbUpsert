@@ -9,6 +9,7 @@
 #' It is intended that both statements are sent in the same transaction.
 #'
 #' @param conn A DBI Connection Object
+#' @param schema A schema name in the DB to upsert to
 #' @param target_table A table name in the DB to upsert to
 #' @param staging_table A table name in the DB containing data to upsert
 #' @param table_pkey A character vector of column names used as the primary key
@@ -17,14 +18,17 @@
 #'
 .dbUpsertStatement <- function(
   conn,
+  schema,
   target_table,
   staging_table,
   table_pkey,
   insert_cols,
   update_cols
 ) {
+
   upsert_update_statement <- .dbUpdateStatement(
     conn = conn,
+    schema = schema,
     target_table = target_table,
     staging_table = staging_table,
     join_cols = table_pkey,
@@ -34,24 +38,24 @@
   target_table <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = target_table
-  ) |> as.character()
-
-  insert_cols <- DBI::dbQuoteIdentifier(
-    conn = conn,
-    x = insert_cols
-  ) |>
-    as.character() |>
-    paste0(collapse = "\n  ,")
+  ) %>% as.character() %>% paste(schema, ., sep = ".")
 
   staging_table <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = staging_table
-  ) |> as.character()
+  ) %>% as.character() %>% paste(schema, ., sep = ".")
+
+  insert_cols <- DBI::dbQuoteIdentifier(
+    conn = conn,
+    x = insert_cols
+  ) %>%
+    as.character() %>%
+    paste0(collapse = "\n  ,")
 
   table_pkey <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = table_pkey
-  ) |>
+  ) %>%
     as.character()
 
   upsert_insert_statement <- paste0(
@@ -66,7 +70,7 @@
     "  WHERE ", target_table, ".", table_pkey[1],  " = ", staging_table, ".", table_pkey[1], "\n",
     ifelse(
       length(table_pkey) > 1,
-      paste0("  AND ", target_table, ".", table_pkey[-1], " = ", staging_table, ".", table_pkey[-1]) |>
+      paste0("  AND ", target_table, ".", table_pkey[-1], " = ", staging_table, ".", table_pkey[-1]) %>%
         paste0(collapse = "\n"),
       ""
     ),

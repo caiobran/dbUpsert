@@ -13,6 +13,8 @@
 #'
 #' @param conn A DBI Connection Object
 #' @param name A table name in the DB to upsert to
+#' @param schema A table schema in the DB to upsert to
+#' @param catalog A table catalog in the DB to upsert to
 #' @param value A dataframe object containing data to update
 #' @param join_on A character vector of column names to match between the data
 #' frame and SQL table. If not provided, will guess based on SQL primary key or
@@ -29,6 +31,8 @@
 dbUpdateTable <- function(
   conn,
   name,
+  schema,
+  catalog,
   value,
   join_on = NULL,
   stage_table = paste0("stage_", name),
@@ -40,14 +44,19 @@ dbUpdateTable <- function(
   ##############################################################################
   # check if table exists
   ##############################################################################
-  if (DBI::dbExistsTable(conn, name) == FALSE) {
+  table_exists <- DBI::dbExistsTable(
+    conn = conn,
+    name = DBI::Id(catalog = catalog, schema = schema, table = name)
+  )
+
+  if (table_exists == FALSE) {
     stop(paste0("Target table `", name, "` does not exist."))
   }
 
   ##############################################################################
   # Try to guess `join_on` if not provided explicitly
   ##############################################################################
-  table_cols <- dbColumnInfoExtended(conn, name)
+  table_cols <- dbColumnInfoExtended(conn, name, schema, catalog)
 
   # first, check if there is an identity column, and use the identity column
   if (is.null(join_on)) {
@@ -123,8 +132,8 @@ dbUpdateTable <- function(
   ##############################################################################
   # Check if any of the join_on values are duplicated
   ##############################################################################
-  provided_rows <- value[, join_on, drop = FALSE] |> nrow()
-  provided_unique_rows <- value[, join_on, drop = FALSE] |> unique() |> nrow()
+  provided_rows <- value[, join_on, drop = FALSE] %>% nrow()
+  provided_unique_rows <- value[, join_on, drop = FALSE] %>% unique() %>% nrow()
 
   if (provided_rows > provided_unique_rows) {
     stop(paste0(
@@ -154,9 +163,9 @@ dbUpdateTable <- function(
   ##############################################################################
   # Check for duplicated column names
   ##############################################################################
-  duplicate_cols <- value |>
-    names() |>
-    duplicated() |>
+  duplicate_cols <- value %>%
+    names() %>%
+    duplicated() %>%
     {\(x) names(value)[x]}()
 
   if (length(duplicate_cols) > 0) {
@@ -187,7 +196,7 @@ dbUpdateTable <- function(
 
   DBI::dbWriteTable(
     conn = conn,
-    name = stage_table,
+    name = DBI::Id(catalog = catalog, schema = schema, table = stage_table),
     value = value,
     overwrite = overwrite_stage_table
   )
@@ -197,6 +206,7 @@ dbUpdateTable <- function(
   ##############################################################################
   update_statement <- .dbUpdateStatement(
     conn = conn,
+    schema = schema,
     target_table = name,
     staging_table = stage_table,
     join_cols = join_on,
@@ -225,7 +235,10 @@ dbUpdateTable <- function(
     cat(paste0("Dropping staging table: ", stage_table, "\n"))
   }
 
-  DBI::dbRemoveTable(conn, stage_table)
+  DBI::dbRemoveTable(
+    conn = conn,
+    name = DBI::Id(catalog = catalog, schema = schema, table = stage_table)
+  )
 
   return(TRUE)
 }

@@ -30,6 +30,8 @@
 dbUpsertTable <- function(
   conn,
   name,
+  schema,
+  catalog,
   value,
   value_pkey = NA,
   stage_table = paste0("stage_", name),
@@ -41,7 +43,12 @@ dbUpsertTable <- function(
   ##############################################################################
   # check if table exists
   ##############################################################################
-  if (DBI::dbExistsTable(conn, name) == FALSE) {
+  table_exists <- DBI::dbExistsTable(
+    conn = conn,
+    name = DBI::Id(catalog = catalog, schema = schema, table = name)
+  )
+
+  if (table_exists == FALSE) {
     stop(paste0("Target table `", name, "` does not exist."))
   }
 
@@ -92,8 +99,8 @@ dbUpsertTable <- function(
   ##############################################################################
   # Check for any duplicate keys, cannot do upserts
   ##############################################################################
-  provided_rows <- value[, value_pkey, drop = FALSE] |> nrow()
-  provided_unique_rows <- value[, value_pkey, drop = FALSE] |> unique() |> nrow()
+  provided_rows <- value[, value_pkey, drop = FALSE] %>% nrow()
+  provided_unique_rows <- value[, value_pkey, drop = FALSE] %>% unique() %>% nrow()
 
   if (provided_rows > provided_unique_rows) {
     stop("More than one row with the same primary key cannot be upserted.")
@@ -106,7 +113,7 @@ dbUpsertTable <- function(
   if (verbose == TRUE) {
     cat("Querying table column info\n")
   }
-  table_cols <- dbColumnInfoExtended(conn, name)
+  table_cols <- dbColumnInfoExtended(conn, name, schema, catalog)
   table_cols <- table_cols[!table_cols$column_name %in% value_pkey, ]
 
   if (verbose == TRUE) {
@@ -116,7 +123,7 @@ dbUpsertTable <- function(
         table_cols$column_name,
         " (", table_cols$data_type, ") ",
         ifelse(table_cols$is_nullable == TRUE, "NULL", "NOT NULL")
-      ) |> paste0(collapse = "\n  "),
+      ) %>% paste0(collapse = "\n  "),
       "\n"
     ))
   }
@@ -171,9 +178,9 @@ dbUpsertTable <- function(
   ##############################################################################
   # Check for duplicated column names
   ##############################################################################
-  duplicate_cols <- value |>
-    names() |>
-    duplicated() |>
+  duplicate_cols <- value %>%
+    names() %>%
+    duplicated() %>%
     {\(x) names(value)[x]}()
 
   if (length(duplicate_cols) > 0) {
@@ -204,7 +211,7 @@ dbUpsertTable <- function(
 
   DBI::dbWriteTable(
     conn = conn,
-    name = stage_table,
+    name = DBI::Id(catalog = catalog, schema = schema, table = stage_table),
     value = value,
     overwrite = overwrite_stage_table
   )
@@ -214,6 +221,7 @@ dbUpsertTable <- function(
   ##############################################################################
   upsert_statements <- .dbUpsertStatement(
     conn = conn,
+    schema = schema,
     target_table = name,
     staging_table = stage_table,
     table_pkey = value_pkey,
@@ -233,11 +241,13 @@ dbUpsertTable <- function(
   DBI::dbWithTransaction(
     conn = conn,
     {
-      update_res <- DBI::dbSendStatement(conn, upsert_statements[[1]])
-      DBI::dbClearResult(update_res)
+      rs <- DBI::dbSendStatement(conn, upsert_statements[[1]])
+      DBI::dbGetRowsAffected(rs) %>% cat(" row(s) affected by UPDATE.\n")
+      DBI::dbClearResult(rs)
 
-      insert_res <- DBI::dbSendStatement(conn, upsert_statements[[2]])
-      DBI::dbClearResult(insert_res)
+      rs <- DBI::dbSendStatement(conn, upsert_statements[[2]])
+      DBI::dbGetRowsAffected(rs) %>% cat(" row(s) affected by INSERT.\n")
+      DBI::dbClearResult(rs)
     }
   )
 
@@ -248,7 +258,10 @@ dbUpsertTable <- function(
     cat(paste0("Dropping staging table: ", stage_table, "\n"))
   }
 
-  DBI::dbRemoveTable(conn, stage_table)
+  DBI::dbRemoveTable(
+    conn = conn,
+    name = DBI::Id(catalog = catalog, schema = schema, table = stage_table)
+  )
 
   return(TRUE)
 }

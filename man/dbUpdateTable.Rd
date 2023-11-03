@@ -7,6 +7,8 @@
 dbUpdateTable(
   conn,
   name,
+  schema,
+  catalog,
   value,
   join_on = NULL,
   stage_table = paste0("stage_", name),
@@ -18,6 +20,10 @@ dbUpdateTable(
 \item{conn}{A DBI Connection Object}
 
 \item{name}{A table name in the DB to upsert to}
+
+\item{schema}{A table schema in the DB to upsert to}
+
+\item{catalog}{A table catalog in the DB to upsert to}
 
 \item{value}{A dataframe object containing data to update}
 
