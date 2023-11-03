@@ -25,9 +25,9 @@ dbColumnInfoExtended <- function(conn, name, schema, catalog) {
         FROM
           information_schema.columns
         WHERE
-          name = ?
-          AND schema = ?
-          AND catalog = ?;",
+          table_name = ?
+          AND table_schema = ?
+          AND table_catalog = ?;",
       params = list(name, schema, catalog)
     )
   } else if (rdbms == "MySQLConnection") {
@@ -45,9 +45,9 @@ dbColumnInfoExtended <- function(conn, name, schema, catalog) {
         FROM
           information_schema.columns
         WHERE
-          name = ?
-          AND schema = ?
-          AND catalog = ?;",
+          table_name = ?
+          AND table_schema = ?
+          AND table_catalog = ?;",
       params = list(name, schema, catalog)
     )
   } else if (rdbms == "Microsoft SQL Server") {
