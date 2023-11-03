@@ -30,6 +30,8 @@
 dbUpsertTable <- function(
   conn,
   name,
+  schema,
+  catalog,
   value,
   value_pkey = NA,
   stage_table = paste0("stage_", name),
@@ -106,7 +108,7 @@ dbUpsertTable <- function(
   if (verbose == TRUE) {
     cat("Querying table column info\n")
   }
-  table_cols <- dbColumnInfoExtended(conn, name)
+  table_cols <- dbColumnInfoExtended(conn, name, schema, catalog)
   table_cols <- table_cols[!table_cols$column_name %in% value_pkey, ]
 
   if (verbose == TRUE) {

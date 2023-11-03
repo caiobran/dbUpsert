@@ -7,6 +7,8 @@
 dbUpsertTable(
   conn,
   name,
+  schema,
+  catalog,
   value,
   value_pkey = NA,
   stage_table = paste0("stage_", name),

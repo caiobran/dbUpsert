@@ -13,6 +13,8 @@
 #'
 #' @param conn A DBI Connection Object
 #' @param name A table name in the DB to upsert to
+#' @param schema A table schema in the DB to upsert to
+#' @param catalog A table catalog in the DB to upsert to
 #' @param value A dataframe object containing data to update
 #' @param join_on A character vector of column names to match between the data
 #' frame and SQL table. If not provided, will guess based on SQL primary key or
@@ -29,6 +31,8 @@
 dbUpdateTable <- function(
   conn,
   name,
+  schema,
+  catalog,
   value,
   join_on = NULL,
   stage_table = paste0("stage_", name),
@@ -47,7 +51,7 @@ dbUpdateTable <- function(
   ##############################################################################
   # Try to guess `join_on` if not provided explicitly
   ##############################################################################
-  table_cols <- dbColumnInfoExtended(conn, name)
+  table_cols <- dbColumnInfoExtended(conn, name, schema, catalog)
 
   # first, check if there is an identity column, and use the identity column
   if (is.null(join_on)) {
