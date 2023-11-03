@@ -191,7 +191,7 @@ dbUpdateTable <- function(
 
   DBI::dbWriteTable(
     conn = conn,
-    name = stage_table,
+    name = DBI::Id(catalog = catalog, schema = schema, table = stage_table),
     value = value,
     overwrite = overwrite_stage_table
   )
