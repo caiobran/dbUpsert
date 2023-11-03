@@ -13,7 +13,7 @@
 #'
 #' @export
 dbVersion <- function(conn) {
-  rdbms <- conn |> class() |> as.character()
+  rdbms <- conn %>% class() %>% as.character()
 
   if (rdbms == "PqConnection") {
     return(DBI::dbGetInfo(conn)[["db.version"]])

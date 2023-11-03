@@ -8,7 +8,7 @@
 #' @export
 dbColumnInfoExtended <- function(conn, name, schema, catalog) {
 
-  rdbms <- conn |> class() |> as.character()
+  rdbms <- conn %>% class() %>% as.character()
 
   if (rdbms == "PqConnection") {
     col_info <- DBI::dbGetQuery(

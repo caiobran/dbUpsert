@@ -4,7 +4,7 @@
 #' @param name A table name in the DB
 #'
 .dbTablePkey <- function(conn, name) {
-  rdbms <- conn |> class() |> as.character()
+  rdbms <- conn %>% class() %>% as.character()
 
   if (rdbms == "PqConnection") {
     pkey <- .dbTablePkey_postgres(conn, name)

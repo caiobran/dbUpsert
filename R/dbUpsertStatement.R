@@ -38,24 +38,24 @@
   target_table <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = target_table
-  ) |> as.character() |> paste(schema, ., sep = ".")
+  ) %>% as.character() %>% paste(schema, ., sep = ".")
 
   staging_table <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = staging_table
-  ) |> as.character() |> paste(schema, ., sep = ".")
+  ) %>% as.character() %>% paste(schema, ., sep = ".")
 
   insert_cols <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = insert_cols
-  ) |>
-    as.character() |>
+  ) %>%
+    as.character() %>%
     paste0(collapse = "\n  ,")
 
   table_pkey <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = table_pkey
-  ) |>
+  ) %>%
     as.character()
 
   upsert_insert_statement <- paste0(
@@ -70,7 +70,7 @@
     "  WHERE ", target_table, ".", table_pkey[1],  " = ", staging_table, ".", table_pkey[1], "\n",
     ifelse(
       length(table_pkey) > 1,
-      paste0("  AND ", target_table, ".", table_pkey[-1], " = ", staging_table, ".", table_pkey[-1]) |>
+      paste0("  AND ", target_table, ".", table_pkey[-1], " = ", staging_table, ".", table_pkey[-1]) %>%
         paste0(collapse = "\n"),
       ""
     ),

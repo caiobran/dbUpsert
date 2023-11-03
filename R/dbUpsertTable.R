@@ -99,8 +99,8 @@ dbUpsertTable <- function(
   ##############################################################################
   # Check for any duplicate keys, cannot do upserts
   ##############################################################################
-  provided_rows <- value[, value_pkey, drop = FALSE] |> nrow()
-  provided_unique_rows <- value[, value_pkey, drop = FALSE] |> unique() |> nrow()
+  provided_rows <- value[, value_pkey, drop = FALSE] %>% nrow()
+  provided_unique_rows <- value[, value_pkey, drop = FALSE] %>% unique() %>% nrow()
 
   if (provided_rows > provided_unique_rows) {
     stop("More than one row with the same primary key cannot be upserted.")
@@ -123,7 +123,7 @@ dbUpsertTable <- function(
         table_cols$column_name,
         " (", table_cols$data_type, ") ",
         ifelse(table_cols$is_nullable == TRUE, "NULL", "NOT NULL")
-      ) |> paste0(collapse = "\n  "),
+      ) %>% paste0(collapse = "\n  "),
       "\n"
     ))
   }
@@ -178,9 +178,9 @@ dbUpsertTable <- function(
   ##############################################################################
   # Check for duplicated column names
   ##############################################################################
-  duplicate_cols <- value |>
-    names() |>
-    duplicated() |>
+  duplicate_cols <- value %>%
+    names() %>%
+    duplicated() %>%
     {\(x) names(value)[x]}()
 
   if (length(duplicate_cols) > 0) {

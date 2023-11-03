@@ -132,8 +132,8 @@ dbUpdateTable <- function(
   ##############################################################################
   # Check if any of the join_on values are duplicated
   ##############################################################################
-  provided_rows <- value[, join_on, drop = FALSE] |> nrow()
-  provided_unique_rows <- value[, join_on, drop = FALSE] |> unique() |> nrow()
+  provided_rows <- value[, join_on, drop = FALSE] %>% nrow()
+  provided_unique_rows <- value[, join_on, drop = FALSE] %>% unique() %>% nrow()
 
   if (provided_rows > provided_unique_rows) {
     stop(paste0(
@@ -163,9 +163,9 @@ dbUpdateTable <- function(
   ##############################################################################
   # Check for duplicated column names
   ##############################################################################
-  duplicate_cols <- value |>
-    names() |>
-    duplicated() |>
+  duplicate_cols <- value %>%
+    names() %>%
+    duplicated() %>%
     {\(x) names(value)[x]}()
 
   if (length(duplicate_cols) > 0) {

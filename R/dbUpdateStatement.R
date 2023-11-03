@@ -35,24 +35,24 @@
   target_table <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = target_table
-  ) |> as.character() |> paste(schema, ., sep = ".")
+  ) %>% as.character() %>% paste(schema, ., sep = ".")
 
   staging_table <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = staging_table
-  ) |> as.character() |> paste(schema, ., sep = ".")
+  ) %>% as.character() %>% paste(schema, ., sep = ".")
 
   join_cols <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = join_cols
-  ) |> as.character()
+  ) %>% as.character()
 
   update_cols <- DBI::dbQuoteIdentifier(
     conn = conn,
     x = update_cols
-  ) |>
-    as.character() |>
-    {\(x) paste0(x, " = ", staging_table, ".", x)}() |>
+  ) %>%
+    as.character() %>%
+    {\(x) paste0(x, " = ", staging_table, ".", x)}() %>%
     paste0(collapse = "\n  ,")
 
   update_statement <- paste0(
@@ -62,7 +62,7 @@
     "WHERE ", target_table, ".", join_cols[1],  " = ", staging_table, ".", join_cols[1], "\n",
     ifelse(
       length(join_cols) > 1,
-      paste0("AND ", target_table, ".", join_cols[-1], " = ", staging_table, ".", join_cols[-1]) |>
+      paste0("AND ", target_table, ".", join_cols[-1], " = ", staging_table, ".", join_cols[-1]) %>%
         paste0(collapse = "\n"),
       ""
     ),
