@@ -48,7 +48,7 @@ dbUpsertTable <- function(
   ##############################################################################
   # Get primary key column(s) from table
   ##############################################################################
-  if (is.na(value_pkey)) {
+  if (any(is.na(value_pkey))) {
     if (verbose == TRUE) {
       cat("Querying table primary key columns\n")
     }
