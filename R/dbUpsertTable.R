@@ -221,6 +221,7 @@ dbUpsertTable <- function(
   ##############################################################################
   upsert_statements <- .dbUpsertStatement(
     conn = conn,
+    schema = schema,
     target_table = name,
     staging_table = stage_table,
     table_pkey = value_pkey,
