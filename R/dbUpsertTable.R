@@ -241,11 +241,14 @@ dbUpsertTable <- function(
   DBI::dbWithTransaction(
     conn = conn,
     {
-      update_res <- DBI::dbSendStatement(conn, upsert_statements[[1]])
-      DBI::dbClearResult(update_res)
+      browser()
+      rs <- DBI::dbSendStatement(conn, upsert_statements[[1]])
+      DBI::dbGetRowsAffected(rs)
+      DBI::dbClearResult(rs)
 
-      insert_res <- DBI::dbSendStatement(conn, upsert_statements[[2]])
-      DBI::dbClearResult(insert_res)
+      rs <- DBI::dbSendStatement(conn, upsert_statements[[2]])
+      DBI::dbGetRowsAffected(rs)
+      DBI::dbClearResult(rs)
     }
   )
 
