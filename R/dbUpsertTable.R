@@ -256,7 +256,10 @@ dbUpsertTable <- function(
     cat(paste0("Dropping staging table: ", stage_table, "\n"))
   }
 
-  DBI::dbRemoveTable(conn, stage_table)
+  DBI::dbRemoveTable(
+    conn = conn,
+    name = DBI::Id(catalog = catalog, schema = schema, table = stage_table)
+  )
 
   return(TRUE)
 }
